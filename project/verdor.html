@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>verdor · calculadora de calorías</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@500;600;700&family=Fraunces:wght@400;500;600&display=swap" />
+<style>
+  html, body, #root { margin: 0; padding: 0; height: 100%; background: #EAE9E0; overscroll-behavior: none; }
+  body { font-family: 'Inter', -apple-system, system-ui, sans-serif; -webkit-font-smoothing: antialiased; color: #1F2A1E; }
+  * { box-sizing: border-box; }
+  input[type=range] { -webkit-appearance: none; background: transparent; }
+  input[type=range]::-webkit-slider-runnable-track { height: 4px; border-radius: 2px; background: rgba(0,0,0,0.08); }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; border-radius: 11px; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.15), 0 0 0 2px currentColor; margin-top: -9px; }
+  ::-webkit-scrollbar { display: none; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel" src="ios-frame.jsx"></script>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel" src="theme.js"></script>
+<script type="text/babel" src="icons.jsx"></script>
+<script type="text/babel" src="ui.jsx"></script>
+<script type="text/babel" src="screens1.jsx"></script>
+<script type="text/babel" src="screens2.jsx"></script>
+<script type="text/babel" src="screens3.jsx"></script>
+<script type="text/babel" src="app.jsx"></script>
+
+<script type="text/babel" data-presets="react">
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "dark": false,
+  "palette": "citrico",
+  "vibe": "equilibrado",
+  "density": "densa",
+  "voice": "ludico"
+}/*EDITMODE-END*/;
+
+function Shell() {
+  const { useTweaks, TweaksPanel, TweakSection, TweakToggle, TweakColor, TweakRadio, TweakSelect } = window;
+  const tweaksHook = useTweaks || ((d) => [d, () => {}]);
+  const [t, setTweak] = tweaksHook(TWEAK_DEFAULTS);
+  const dark = !!t.dark;
+  const palette = t.palette || 'citrico';
+  const vibe = t.vibe || 'equilibrado';
+  const density = t.density || 'estandar';
+  const voice = t.voice || 'calido';
+  const feel = { vibe, density, voice };
+
+  const setDark = (v) => setTweak && setTweak({ dark: v });
+  const setPalette = (v) => setTweak && setTweak({ palette: v });
+
+  // Build swatches array for the color picker
+  const paletteOptions = Object.entries(window.PALETTES || {}).map(([key, p]) => p.swatch);
+  const paletteKeys = Object.keys(window.PALETTES || {});
+  const currentSwatch = window.PALETTES[palette]?.swatch || paletteOptions[0];
+
+  return (
+    <window.DesignCanvas>
+      <window.DCSection id="prototypes" title="Calculadora de calorías" subtitle={`Dos direcciones · paleta: ${window.PALETTES[palette]?.name || palette}`}>
+        <window.DCArtboard id="dir-a" label={`A · Editorial · ${window.PALETTES[palette]?.name || ''}`} width={430} height={920}>
+          <window.IOSDevice width={430} height={920} dark={dark}>
+            <window.App dir="A" dark={dark} palette={palette} feel={feel} onToggleDark={() => setDark(!dark)} />
+          </window.IOSDevice>
+        </window.DCArtboard>
+        <window.DCArtboard id="dir-b" label={`B · Vital · ${window.PALETTES[palette]?.name || ''}`} width={430} height={920}>
+          <window.IOSDevice width={430} height={920} dark={dark}>
+            <window.App dir="B" dark={dark} palette={palette} feel={feel} onToggleDark={() => setDark(!dark)} />
+          </window.IOSDevice>
+        </window.DCArtboard>
+      </window.DCSection>
+
+      {TweaksPanel && (
+        <TweaksPanel title="Tweaks">
+          <TweakSection title="Paleta de color">
+            <TweakColor
+              label="Tema"
+              value={currentSwatch}
+              options={paletteOptions}
+              onChange={(arr) => {
+                const idx = paletteOptions.findIndex(p => JSON.stringify(p) === JSON.stringify(arr));
+                if (idx >= 0) setPalette(paletteKeys[idx]);
+              }}
+            />
+            <div style={{ fontSize: 11, color: '#888', marginTop: 6, fontWeight: 500 }}>
+              {window.PALETTES[palette]?.name}
+            </div>
+          </TweakSection>
+          <TweakSection title="Vibe" subtitle="Intensidad visual del diseño">
+            <TweakRadio label="Energía" value={vibe} options={['sereno','equilibrado','intenso']}
+              onChange={(v) => setTweak({ vibe: v })} />
+          </TweakSection>
+          <TweakSection title="Densidad" subtitle="Qué contenido aparece en pantalla">
+            <TweakRadio label="Información" value={density} options={['minimal','estandar','densa']}
+              onChange={(v) => setTweak({ density: v })} />
+          </TweakSection>
+          <TweakSection title="Voz" subtitle="Tono del producto">
+            <TweakRadio label="Personalidad" value={voice} options={['clinico','calido','ludico']}
+              onChange={(v) => setTweak({ voice: v })} />
+          </TweakSection>
+          <TweakSection title="Modo">
+            <TweakToggle label="Oscuro" value={dark} onChange={(v) => setDark(v)} />
+          </TweakSection>
+        </TweaksPanel>
+      )}
+    </window.DesignCanvas>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<Shell />);
+</script>
+</body>
+</html>
