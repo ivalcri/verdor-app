@@ -86,7 +86,7 @@ export default function Profile({ t, dark, onToggleDark, apiKey, onSaveApiKey, o
 
         {/* API Key section */}
         <h3 style={{ margin: '22px 0 10px', fontSize: 11, color: t.muted, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-          API de Anthropic
+          API de Google Gemini (gratis)
         </h3>
         <Card t={t} pad={0} style={{ overflow: 'hidden' }}>
           <Row
@@ -107,8 +107,8 @@ export default function Profile({ t, dark, onToggleDark, apiKey, onSaveApiKey, o
         {showApiInput && (
           <Card t={t} pad={16} style={{ marginTop: 8 }} className="fade-in">
             <div style={{ fontSize: 12, color: t.muted, marginBottom: 10, lineHeight: 1.5 }}>
-              Obtén tu API key en{' '}
-              <span style={{ color: t.primary, fontWeight: 500 }}>console.anthropic.com</span>.
+              Obtén tu API key gratis en{' '}
+              <span style={{ color: t.primary, fontWeight: 500 }}>aistudio.google.com</span>.
               Se guarda solo en este dispositivo.
             </div>
             <div style={{ position: 'relative', marginBottom: 10 }}>
@@ -116,7 +116,7 @@ export default function Profile({ t, dark, onToggleDark, apiKey, onSaveApiKey, o
                 type={keyVisible ? 'text' : 'password'}
                 value={keyDraft}
                 onChange={e => setKeyDraft(e.target.value)}
-                placeholder="sk-ant-api03-..."
+                placeholder="AIzaSy..."
                 style={{
                   width: '100%', padding: '12px 44px 12px 14px', borderRadius: t.radiusSm,
                   border: `1px solid ${t.border}`, background: t.surfaceAlt,

@@ -1,10 +1,10 @@
-const ANTHROPIC_API = 'https://api.anthropic.com/v1/messages';
+const GEMINI_API = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
 
 export async function analyzeFood(imageDataUrl, apiKey) {
   const match = imageDataUrl.match(/^data:(image\/[^;]+);base64,(.+)$/);
   if (!match) throw new Error('Formato de imagen no válido');
 
-  const mediaType = match[1];
+  const mimeType = match[1];
   const data = match[2];
 
   const prompt = `Analiza esta foto de un plato de comida. Devuelve EXCLUSIVAMENTE un objeto JSON válido (sin texto antes o después, sin markdown) con esta estructura exacta:
@@ -24,24 +24,17 @@ export async function analyzeFood(imageDataUrl, apiKey) {
 
 Incluye 3-7 ingredientes principales. Sé realista con las estimaciones. El campo "short" debe ser una palabra de máximo 6 letras en mayúsculas.`;
 
-  const response = await fetch(ANTHROPIC_API, {
+  const response = await fetch(`${GEMINI_API}?key=${apiKey}`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-      'anthropic-dangerous-allow-browser': 'true',
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      model: 'claude-sonnet-4-5-20251001',
-      max_tokens: 1024,
-      messages: [{
-        role: 'user',
-        content: [
-          { type: 'image', source: { type: 'base64', media_type: mediaType, data } },
-          { type: 'text', text: prompt },
+      contents: [{
+        parts: [
+          { inline_data: { mime_type: mimeType, data } },
+          { text: prompt },
         ],
       }],
+      generationConfig: { temperature: 0.2, maxOutputTokens: 1024 },
     }),
   });
 
@@ -51,7 +44,7 @@ Incluye 3-7 ingredientes principales. Sé realista con las estimaciones. El camp
   }
 
   const json = await response.json();
-  const text = json.content?.[0]?.text || '';
+  const text = json.candidates?.[0]?.content?.parts?.[0]?.text || '';
 
   const jsonMatch = text.match(/\{[\s\S]*\}/);
   if (!jsonMatch) throw new Error('Respuesta inesperada de la IA');
