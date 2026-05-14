@@ -18,39 +18,53 @@ const PROMPT = `Analiza esta foto de un plato de comida. Devuelve EXCLUSIVAMENTE
 Incluye 3-7 ingredientes principales. Sé realista con las estimaciones. El campo "short" debe ser una palabra de máximo 6 letras en mayúsculas.`;
 
 exports.handler = async (event) => {
+  const headers = { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' };
+
+  if (event.httpMethod === 'OPTIONS') {
+    return { statusCode: 200, headers };
+  }
+
   if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, body: 'Method not allowed' };
+    return { statusCode: 405, headers, body: JSON.stringify({ error: 'Method not allowed' }) };
   }
 
   let body;
   try {
     body = JSON.parse(event.body);
   } catch {
-    return { statusCode: 400, body: JSON.stringify({ error: 'Invalid JSON' }) };
+    return { statusCode: 400, headers, body: JSON.stringify({ error: 'Invalid request body' }) };
   }
 
   const { imageData, mimeType, apiKey } = body;
-  if (!apiKey) return { statusCode: 400, body: JSON.stringify({ error: 'Missing API key' }) };
 
-  const geminiRes = await fetch(`${GEMINI_API}?key=${apiKey}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      contents: [{
-        parts: [
-          { inline_data: { mime_type: mimeType, data: imageData } },
-          { text: PROMPT },
-        ],
-      }],
-      generationConfig: { temperature: 0.2, maxOutputTokens: 1024 },
-    }),
-  });
+  if (!apiKey || !apiKey.trim()) {
+    return { statusCode: 400, headers, body: JSON.stringify({ error: 'Missing API key' }) };
+  }
+
+  let geminiRes;
+  try {
+    geminiRes = await fetch(`${GEMINI_API}?key=${apiKey.trim()}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{
+          parts: [
+            { inline_data: { mime_type: mimeType, data: imageData } },
+            { text: PROMPT },
+          ],
+        }],
+        generationConfig: { temperature: 0.2, maxOutputTokens: 1024 },
+      }),
+    });
+  } catch (err) {
+    return { statusCode: 502, headers, body: JSON.stringify({ error: 'No se pudo conectar con Google. Intenta de nuevo.' }) };
+  }
 
   const data = await geminiRes.json();
 
   return {
     statusCode: geminiRes.status,
-    headers: { 'Content-Type': 'application/json' },
+    headers,
     body: JSON.stringify(data),
   };
 };
