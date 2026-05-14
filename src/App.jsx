@@ -82,7 +82,7 @@ export default function App() {
 
   const handleAnalyze = useCallback(async (image) => {
     if (!apiKey) {
-      setError('Configura tu API key de Anthropic en Perfil → API Key');
+      setError('Configura tu API key de Google Gemini en Perfil → API Key');
       go('profile');
       return;
     }
