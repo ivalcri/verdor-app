@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <!-- Background gradient: orange top-left to green bottom-right -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#F5A020;stop-opacity:1" />
+      <stop offset="55%" style="stop-color:#D4B020;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#72B832;stop-opacity:1" />
+    </linearGradient>
+    <!-- Drop shadow filter -->
+    <filter id="shadow" x="-15%" y="-15%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="8" stdDeviation="18" flood-color="rgba(0,0,0,0.22)"/>
+    </filter>
+    <filter id="innerShadow">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="rgba(0,0,0,0.1)"/>
+    </filter>
+  </defs>
+
+  <!-- Rounded square background -->
+  <rect width="1024" height="1024" rx="230" ry="230" fill="url(#bgGrad)"/>
+
+  <!-- White ring (outer circle frame) -->
+  <circle cx="512" cy="490" r="340" fill="none" stroke="white" stroke-width="52" filter="url(#shadow)"/>
+  <!-- White ring fill (the plate/circle background) -->
+  <circle cx="512" cy="490" r="314" fill="white" opacity="0.18"/>
+
+  <!-- Camera body (white silhouette) -->
+  <!-- Camera main body -->
+  <path d="M340 430 Q340 390 380 390 L420 390 L440 360 Q450 344 470 344 L554 344 Q574 344 584 360 L604 390 L644 390 Q684 390 684 430 L684 570 Q684 610 644 610 L380 610 Q340 610 340 570 Z"
+        fill="white"/>
+  <!-- Camera lens circle -->
+  <circle cx="512" cy="490" r="75" fill="url(#bgGrad)"/>
+  <circle cx="512" cy="490" r="55" fill="white" opacity="0.35"/>
+  <!-- Flash/viewfinder in top-right -->
+  <circle cx="630" cy="414" r="20" fill="url(#bgGrad)"/>
+
+  <!-- Flash rays above camera -->
+  <line x1="512" y1="290" x2="512" y2="258" stroke="white" stroke-width="22" stroke-linecap="round"/>
+  <line x1="472" y1="300" x2="456" y2="272" stroke="white" stroke-width="18" stroke-linecap="round"/>
+  <line x1="552" y1="300" x2="568" y2="272" stroke="white" stroke-width="18" stroke-linecap="round"/>
+
+  <!-- Tomato / citrus wedge (bottom left of circle) -->
+  <g transform="translate(310, 568) rotate(-20)">
+    <!-- Wedge shape -->
+    <path d="M0,0 L90,0 Q110,0 110,20 L110,80 Q50,110 0,80 Z" fill="#E8451A"/>
+    <!-- Rind -->
+    <path d="M0,0 L90,0 Q110,0 110,20 L110,32 Q60,32 0,12 Z" fill="#F07030"/>
+    <!-- Seeds -->
+    <ellipse cx="42" cy="55" rx="8" ry="13" fill="white" opacity="0.9"/>
+    <ellipse cx="70" cy="50" rx="8" ry="13" fill="white" opacity="0.9"/>
+    <ellipse cx="28" cy="68" rx="7" ry="11" fill="white" opacity="0.9"/>
+  </g>
+
+  <!-- Green leaf (bottom right) -->
+  <g transform="translate(595, 575) rotate(25)">
+    <path d="M0,80 Q-20,-20 60,-40 Q80,60 0,80 Z" fill="#5AAA28"/>
+    <!-- Leaf vein -->
+    <path d="M0,80 Q20,20 55,-30" fill="none" stroke="#7DC840" stroke-width="4" stroke-linecap="round"/>
+  </g>
+</svg>
