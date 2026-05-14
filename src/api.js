@@ -1,6 +1,8 @@
 const GEMINI_API = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
 
 export async function analyzeFood(imageDataUrl, apiKey) {
+  apiKey = (apiKey || '').trim();
+  if (!apiKey) throw new Error('Falta la API key de Google Gemini');
   const match = imageDataUrl.match(/^data:(image\/[^;]+);base64,(.+)$/);
   if (!match) throw new Error('Formato de imagen no válido');
 
@@ -40,7 +42,11 @@ Incluye 3-7 ingredientes principales. Sé realista con las estimaciones. El camp
 
   if (!response.ok) {
     const err = await response.json().catch(() => ({}));
-    throw new Error(err.error?.message || `Error ${response.status}`);
+    const msg = err.error?.message || `Error ${response.status}`;
+    if (response.status === 400 || response.status === 403) {
+      throw new Error('API key no válida. Cópiala de nuevo desde aistudio.google.com');
+    }
+    throw new Error(msg);
   }
 
   const json = await response.json();
